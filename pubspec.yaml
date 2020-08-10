@@ -28,6 +28,10 @@ dependencies:
   # https://firebaseopensource.com/projects/firebaseextended/flutterfire/
   firebase_core: ^0.4.5
   firebase_auth: ^0.16.1
+  cloud_firestore: ^0.13.7
+
+  # https://pub.dev/packages/rxdart
+  rxdart: 0.24.1
 
   # https://pub.dev/packages/get_it
   get_it: ^4.0.4

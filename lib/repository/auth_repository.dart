@@ -7,6 +7,9 @@ import 'package:flashcard/model/auth_state.dart';
 import 'package:flashcard/model/user.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:rxdart/subjects.dart';
+
+import '../model/auth_state.dart';
 
 class AuthRepository {
   final FirebaseAuth _auth;
@@ -15,21 +18,19 @@ class AuthRepository {
   bool _isLoggedIn = false;
   User _loggedInUser;
 
-  StreamController<AuthState> _authStateController =
-      StreamController.broadcast();
+  BehaviorSubject<AuthState> _authStateSubject = BehaviorSubject();
 
   AuthRepository({FirebaseAuth auth, FirebaseUserConverter converter})
       : this._auth = auth ?? GetIt.I.get(),
         this._converter = converter ?? GetIt.I.get() {
-    _authStateController.add(AuthState.unauthenticated());
+    _authStateSubject.add(AuthState.unauthenticated());
     this._auth.onAuthStateChanged.listen((event) {
       if (event != null) {
         event.getIdToken().then((value) {
           this._loggedInUser = User(event.displayName, event.email, value.token,
               value.authTime, value.issuedAtTime, value.expirationTime);
           this._isLoggedIn = true;
-          _authStateController
-              .add(AuthState(this._loggedInUser, DateTime.now()));
+          _authStateSubject.add(AuthState(this._loggedInUser, DateTime.now()));
         }).catchError((e) {
           print(e);
           _auth.signOut().then((value) => print("Successfully signed out"));
@@ -38,10 +39,10 @@ class AuthRepository {
     });
   }
 
-  bool isLoggedIn() => _isLoggedIn;
-  User loggedInUser() => _loggedInUser;
+  bool get isLoggedIn => _isLoggedIn;
+  User get loggedInUser => _loggedInUser;
 
-  Stream<AuthState> authState() => _authStateController.stream;
+  Stream<AuthState> get authState => _authStateSubject.stream;
 
   Future<AuthOperation> registerNewUser(
       String name, String email, String password) async {

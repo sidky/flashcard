@@ -4,6 +4,8 @@ import 'package:flashcard/model/auth_state.dart';
 import 'package:flashcard/repository/auth_repository.dart';
 import 'package:get_it/get_it.dart';
 
+import '../model/auth_state.dart';
+
 enum AuthScreen {
   login,
   signup,
@@ -23,6 +25,8 @@ class AuthPresenter {
   }
 
   Stream<AuthScreen> get screenState => this._selectScreenStream.stream;
+
+  Stream<AuthState> get authState => _repository.authState;
 
   Future<AuthState> register(
       String displayName, String email, String password) async {

@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
+import '../repository/auth_repository.dart';
+
 class AuthView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _AuthViewState();
@@ -22,6 +24,10 @@ class _AuthViewState extends State {
       setState(() {
         this._loginScreen = event == AuthScreen.login;
       });
+    });
+
+    _presenter.authState.listen((event) {
+      if (event.isAuthenticated()) {}
     });
   }
 
