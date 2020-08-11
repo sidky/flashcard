@@ -4,7 +4,5 @@ class WordToMapConverter {
   Map<String, dynamic> convert(Word word) => {
         "word": word.word,
         "translation": word.translation,
-        "createdAt": word.createdAt,
-        "updatedAt": word.updatedAt,
       };
 }

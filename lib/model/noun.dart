@@ -19,18 +19,27 @@ class NounForm {
 
   Map<String, dynamic> toJson() =>
       {"type": type, "number": number, "article": article, "word": word};
+
+  NounForm copy(
+      {String id,
+      NounFormType type,
+      GrammaticalNumber number,
+      String article,
+      String word}) {
+    return NounForm(id ?? this.id, type ?? this.type, number ?? this.number,
+        article ?? this.article, word ?? this.word);
+  }
 }
 
 class Noun extends Word {
   final List<NounForm> forms;
 
-  Noun(String id, String base, String translation, this.forms,
-      DateTime createdAt, DateTime updatedAt)
-      : super(id, base, translation, createdAt, updatedAt);
+  Noun(String id, String base, String translation, this.forms)
+      : super(id, base, translation);
 
   Noun.empty()
       : forms = List.empty(),
-        super("", "", "", null, null);
+        super("", "", "");
 
   Map<String, dynamic> toJson() => {
         ...super.toJson(),

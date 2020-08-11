@@ -20,6 +20,7 @@ class CardListPresenter {
 
   Stream<CardList> get cardListStream =>
       CombineLatestStream.list([_nounRepository.stream()]).map((event) {
+        print("********** ${event[0]}  ${event}");
         return CardList(nouns: event[0]);
       });
 }

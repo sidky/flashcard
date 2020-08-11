@@ -13,7 +13,8 @@ class NounToStoreObjectConverter {
       : _wordConverter = wordConverter ?? GetIt.I.get(),
         _converter = converter ?? GetIt.I.get();
 
-  StoreObject convert(Noun noun) => StoreObject(
-      fields: _wordConverter.convert(noun),
-      subcollections: {"forms": noun.forms.map((e) => _converter.convert(e))});
+  StoreObject convert(Noun noun) =>
+      StoreObject(fields: _wordConverter.convert(noun), subcollections: {
+        "forms": noun.forms.map((e) => _converter.convert(e)).toList()
+      });
 }

@@ -1,5 +1,9 @@
+import 'dart:collection';
+
+import 'package:flashcard/edit/edit_noun_presenter.dart';
 import 'package:flashcard/model/noun.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class EditNounWidget extends StatefulWidget {
   final Noun noun;
@@ -11,17 +15,18 @@ class EditNounWidget extends StatefulWidget {
 }
 
 class _EditNounState extends State {
-  Noun _noun;
-
   final TextEditingController _wordController;
   final TextEditingController _translationController;
 
-  _EditNounState({Noun noun})
-      : _noun = noun ?? Noun.empty(),
-        _wordController = TextEditingController.fromValue(
-            TextEditingValue(text: noun?.word ?? "")),
-        _translationController = TextEditingController.fromValue(
-            TextEditingValue(text: noun?.translation ?? ""));
+  final EditNounPresenter _presenter;
+
+  _EditNounState({Noun noun, EditNounPresenter presenter})
+      : _presenter = presenter ?? GetIt.I.get(param1: noun),
+        _wordController = TextEditingController(),
+        _translationController = TextEditingController() {
+    _wordController.text = _presenter.word;
+    _translationController.text = _presenter.translation;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +43,12 @@ class _EditNounState extends State {
             decoration: InputDecoration(labelText: "Translation"),
           ),
           Text("Singular"),
-          _EditNounForms(_noun, GrammaticalNumber.singular),
+          _EditNounForms(GrammaticalNumber.singular, _presenter),
           Text("Plural"),
-          _EditNounForms(_noun, GrammaticalNumber.plural),
+          _EditNounForms(GrammaticalNumber.plural, _presenter),
+          SizedBox(width: 1, height: 20),
+          FlatButton(
+              onPressed: () => _presenter.update(), child: Text("Save changes"))
         ],
       )),
     );
@@ -48,11 +56,40 @@ class _EditNounState extends State {
 }
 
 class _EditNounForms extends StatelessWidget {
-  final Noun _noun;
+  final EditNounPresenter _presenter;
   final GrammaticalNumber _number;
 
-  _EditNounForms(this._noun, this._number,
-      {void onUpdated(GrammaticalNumber number, NounFormType type)});
+  final HashMap<NounFormType, _NounFormUIControllers> _controllers =
+      HashMap.from({
+    NounFormType.accusative: _NounFormUIControllers.instantiate(),
+    NounFormType.nominative: _NounFormUIControllers.instantiate(),
+  });
+
+  _EditNounForms(this._number, this._presenter) {
+    _controllers[NounFormType.nominative].article.text =
+        _presenter.form(NounFormType.nominative, _number).article;
+    _controllers[NounFormType.nominative].word.text =
+        _presenter.form(NounFormType.nominative, _number).word;
+
+    _controllers[NounFormType.accusative].article.text =
+        _presenter.form(NounFormType.accusative, _number).article;
+    _controllers[NounFormType.accusative].word.text =
+        _presenter.form(NounFormType.accusative, _number).word;
+
+    _controllers[NounFormType.nominative].addListener(() {
+      String article = _controllers[NounFormType.nominative].article.text;
+      String word = _controllers[NounFormType.nominative].word.text;
+
+      _presenter.setForm(NounFormType.nominative, _number, article, word);
+    });
+
+    _controllers[NounFormType.accusative].addListener(() {
+      String article = _controllers[NounFormType.accusative].article.text;
+      String word = _controllers[NounFormType.accusative].word.text;
+
+      _presenter.setForm(NounFormType.accusative, _number, article, word);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +103,6 @@ class _EditNounForms extends StatelessWidget {
   }
 
   TableRow _nounCaseRow(NounFormType type) {
-    NounForm form = _findForm(type, _number);
-
-    var articleController = TextEditingController.fromValue(
-        TextEditingValue(text: form?.article ?? ""));
-    var wordController = TextEditingController.fromValue(
-        TextEditingValue(text: form?.word ?? ""));
-
     return TableRow(
       children: [
         TableCell(
@@ -85,24 +115,20 @@ class _EditNounForms extends StatelessWidget {
         Padding(
           padding: EdgeInsets.all(5),
           child: TextField(
-            controller: articleController,
+            controller: _controllers[type].article,
             decoration: InputDecoration(labelText: "article"),
           ),
         ),
         Padding(
           padding: EdgeInsets.all(5),
           child: TextField(
-            controller: wordController,
+            controller: _controllers[type].word,
             decoration: InputDecoration(labelText: "word"),
           ),
         ),
       ],
     );
   }
-
-  NounForm _findForm(NounFormType type, GrammaticalNumber number) => _noun.forms
-      .firstWhere((element) => element.type == type && element.number == number,
-          orElse: () => null);
 
   String _nounCaseName(NounFormType type) {
     switch (type) {
@@ -113,5 +139,25 @@ class _EditNounForms extends StatelessWidget {
       default:
         return "Unknown";
     }
+  }
+}
+
+class _NounFormUIControllers {
+  final TextEditingController article;
+  final TextEditingController word;
+
+  _NounFormUIControllers({@required this.article, @required this.word});
+
+  _NounFormUIControllers.instantiate()
+      : this(article: TextEditingController(), word: TextEditingController());
+
+  void addListener(void onUpdated()) {
+    article.addListener(onUpdated);
+    word.addListener(onUpdated);
+  }
+
+  void dispose() {
+    article.dispose();
+    word.dispose();
   }
 }

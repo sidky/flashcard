@@ -12,7 +12,6 @@ class VerbForm {
 class Verb extends Word {
   List<VerbForm> forms;
 
-  Verb(String id, String base, String translation, this.forms,
-      DateTime createdAt, DateTime updatedAt)
-      : super(id, base, translation, createdAt, updatedAt);
+  Verb(String id, String base, String translation, this.forms)
+      : super(id, base, translation);
 }
