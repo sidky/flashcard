@@ -39,3 +39,29 @@ class WordCardWidget extends StatelessWidget {
     );
   }
 }
+
+class EmptyWordCardWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: SizedBox(
+        width: 200,
+        height: 100,
+        child: Padding(
+          padding: EdgeInsets.all(10.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "+",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40.0),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

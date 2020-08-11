@@ -18,9 +18,10 @@ class CardListPresenter {
 
   Stream<List<Noun>> get nouns => _nounRepository.stream();
 
-  Stream<CardList> get cardListStream =>
-      CombineLatestStream.list([_nounRepository.stream()]).map((event) {
-        print("********** ${event[0]}  ${event}");
-        return CardList(nouns: event[0]);
-      });
+  Stream<CardList> get cardListStream {
+    print("**** GET STREAM");
+    return CombineLatestStream.list([_nounRepository.stream()]).map((event) {
+      return CardList(nouns: event[0]);
+    });
+  }
 }

@@ -26,6 +26,10 @@ class _EditNounState extends State {
         _translationController = TextEditingController() {
     _wordController.text = _presenter.word;
     _translationController.text = _presenter.translation;
+
+    _wordController.addListener(() => _presenter.word = _wordController.text);
+    _translationController.addListener(
+        () => _presenter.translation = _translationController.text);
   }
 
   @override
@@ -48,7 +52,11 @@ class _EditNounState extends State {
           _EditNounForms(GrammaticalNumber.plural, _presenter),
           SizedBox(width: 1, height: 20),
           FlatButton(
-              onPressed: () => _presenter.update(), child: Text("Save changes"))
+              onPressed: () async {
+                await _presenter.update();
+                Navigator.pop(context, "Saved");
+              },
+              child: Text("Save changes"))
         ],
       )),
     );

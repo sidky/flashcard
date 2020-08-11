@@ -4,7 +4,7 @@ import 'package:flashcard/model/noun.dart';
 import 'package:get_it/get_it.dart';
 
 void setup() {
-  GetIt.I.registerLazySingleton(() => CardListPresenter());
+  GetIt.I.registerFactory(() => CardListPresenter());
 
   GetIt.I.registerFactoryParam<EditNounPresenter, Noun, void>(
       (noun, _) => EditNounPresenter(noun));

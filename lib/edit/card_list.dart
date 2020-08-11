@@ -3,7 +3,6 @@ import 'package:flashcard/edit/edit_noun.dart';
 import 'package:flashcard/edit/word_card.dart';
 import 'package:flashcard/model/noun.dart';
 import 'package:flashcard/model/word.dart';
-import 'package:flashcard/repository/noun_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'dart:core';
@@ -21,6 +20,7 @@ class CardListWidgetState extends State {
 
   @override
   Widget build(BuildContext context) {
+    print("**** CARD LIST ***");
     return Scaffold(
         body: StreamBuilder<CardList>(
             stream: _presenter.cardListStream,
@@ -40,7 +40,7 @@ class CardListWidgetState extends State {
               return _buildWordTile(
                   "Noun",
                   data.nouns,
-                  (Noun noun) => _editWord(
+                  (Noun noun) async => await _editWord(
                       context, (context) => EditNounWidget(noun: noun)));
             }));
   }
@@ -51,20 +51,27 @@ class CardListWidgetState extends State {
       title: Text(title),
       children: [
         GridView.builder(
-            itemCount: words.length,
+            itemCount: words.length + 1,
             shrinkWrap: true,
             gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 200),
             itemBuilder: (BuildContext context, int index) {
-              return GestureDetector(
-                  onTap: () => editWord(words[index]),
-                  child: WordCardWidget(word: words[index]));
+              if (index < words.length) {
+                return GestureDetector(
+                    onTap: () => editWord(words[index]),
+                    child: WordCardWidget(word: words[index]));
+              } else {
+                return GestureDetector(
+                    onTap: () => editWord(null), child: EmptyWordCardWidget());
+              }
             })
       ],
     );
   }
 
-  void _editWord(BuildContext context, Widget builder(BuildContext context)) {
-    Navigator.push(context, MaterialPageRoute(builder: builder));
+  Future<void> _editWord(
+      BuildContext context, Widget builder(BuildContext context)) async {
+    await Navigator.push(context, MaterialPageRoute(builder: builder));
+    setState(() {});
   }
 }

@@ -14,10 +14,13 @@ class NounFormToObjectConverter {
       : _nounFormConverter = nounFormConverter ?? GetIt.I.get(),
         _numberConverter = numberConverter ?? GetIt.I.get();
 
-  StoreObject convert(NounForm form) => StoreObject(fields: {
+  StoreObject convert(NounForm form) => StoreObject(
+      id: form.id,
+      fields: {
         "type": _nounFormConverter.convert(form.type),
         "number": _numberConverter.convert(form.number),
         "article": form.article,
         "word": form.word,
-      }, subcollections: null);
+      },
+      subcollections: null);
 }

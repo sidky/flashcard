@@ -36,8 +36,10 @@ class EditNounPresenter {
     _word = noun?.word;
     _translation = noun?.translation;
 
-    for (NounForm form in noun.forms) {
-      _forms.putIfAbsent(NounFormKey(form.type, form.number), () => form);
+    if (noun?.forms != null) {
+      for (NounForm form in noun?.forms) {
+        _forms.putIfAbsent(NounFormKey(form.type, form.number), () => form);
+      }
     }
   }
 
