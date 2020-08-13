@@ -13,6 +13,7 @@ class DocumentToNounFormConverter {
         snapshot.documentID, formType, grammaticalNumber, article, word);
   }
 
+  // TODO: Use converter instead
   NounFormType _toNounForm(String formType) {
     return formType == "nominative"
         ? NounFormType.nominative

@@ -36,29 +36,30 @@ class _EditNounState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-          child: Column(
-        children: [
-          TextField(
-            controller: _wordController,
-            decoration: InputDecoration(labelText: "Word"),
-          ),
-          TextField(
-            controller: _translationController,
-            decoration: InputDecoration(labelText: "Translation"),
-          ),
-          Text("Singular"),
-          _EditNounForms(GrammaticalNumber.singular, _presenter),
-          Text("Plural"),
-          _EditNounForms(GrammaticalNumber.plural, _presenter),
-          SizedBox(width: 1, height: 20),
-          FlatButton(
-              onPressed: () async {
-                await _presenter.update();
-                Navigator.pop(context, "Saved");
-              },
-              child: Text("Save changes"))
-        ],
-      )),
+        child: Column(
+          children: [
+            TextField(
+              controller: _wordController,
+              decoration: InputDecoration(labelText: "Word"),
+            ),
+            TextField(
+              controller: _translationController,
+              decoration: InputDecoration(labelText: "Translation"),
+            ),
+            Text("Singular"),
+            _EditNounForms(GrammaticalNumber.singular, _presenter),
+            Text("Plural"),
+            _EditNounForms(GrammaticalNumber.plural, _presenter),
+            SizedBox(width: 1, height: 20),
+            FlatButton(
+                onPressed: () async {
+                  await _presenter.update();
+                  Navigator.pop(context, "Saved");
+                },
+                child: Text("Save changes"))
+          ],
+        ),
+      ),
     );
   }
 }

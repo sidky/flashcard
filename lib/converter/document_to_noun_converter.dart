@@ -13,24 +13,12 @@ class DocumentToNounConverter {
       : _converter = converter ?? GetIt.I.get();
 
   Future<Noun> convert(DocumentSnapshot snapshot) async {
-    print("Converting noun");
     final String word = snapshot.data["word"];
-    print("Word: $word");
     final String translation = snapshot.data["translation"];
 
-    //developer.log("forms", error: jsonEncode(snapshot));
-    print(snapshot.data.keys);
-    print(snapshot.data.values);
-
-    print("Converting: $word");
     var forms = await snapshot.reference.collection("forms").getDocuments();
     var converted = forms.documents.map((e) => _converter.convert(e)).toList();
-
-    print(converted);
-
     var noun = Noun(snapshot.documentID, word, translation, converted);
-
-    print(noun.toJson());
 
     return noun;
   }

@@ -1,7 +1,9 @@
 import 'package:flashcard/edit/card_list_presenter.dart';
 import 'package:flashcard/edit/edit_noun.dart';
+import 'package:flashcard/edit/edit_verb.dart';
 import 'package:flashcard/edit/word_card.dart';
 import 'package:flashcard/model/noun.dart';
+import 'package:flashcard/model/verb.dart';
 import 'package:flashcard/model/word.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -20,29 +22,44 @@ class CardListWidgetState extends State {
 
   @override
   Widget build(BuildContext context) {
-    print("**** CARD LIST ***");
     return Scaffold(
-        body: StreamBuilder<CardList>(
-            stream: _presenter.cardListStream,
-            builder: (BuildContext context, AsyncSnapshot<CardList> snapshot) {
-              double width = MediaQuery.of(context).size.width;
+      body: StreamBuilder<CardList>(
+        stream: _presenter.cardListStream,
+        builder: (BuildContext context, AsyncSnapshot<CardList> snapshot) {
+          double width = MediaQuery.of(context).size.width;
 
-              var data = snapshot.data;
+          var data = snapshot.data;
 
-              if (data == null) {
-                return Text("No words");
-              }
-              int columns = (width / 200).floor();
-              if (columns == 0) {
-                columns = 1;
-              }
+          if (data == null) {
+            return Text("No words");
+          }
+          int columns = (width / 200).floor();
+          if (columns == 0) {
+            columns = 1;
+          }
 
-              return _buildWordTile(
-                  "Noun",
-                  data.nouns,
-                  (Noun noun) async => await _editWord(
-                      context, (context) => EditNounWidget(noun: noun)));
-            }));
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                _buildWordTile(
+                    "Noun",
+                    data.nouns,
+                    (Noun noun) async => await _editWord(
+                        context, (context) => EditNounWidget(noun: noun))),
+                _buildWordTile(
+                    "Verb",
+                    data.verbs,
+                    (Verb verb) async => await _editWord(
+                        context,
+                        (context) => EditVerbWidget(
+                              verb: verb,
+                            )))
+              ],
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildWordTile<T extends Word>(
