@@ -50,12 +50,35 @@ class _EditVerbState extends State {
               width: 1,
               height: 15,
             ),
-            FlatButton(
-                onPressed: () async {
-                  await _presenter.update();
-                  Navigator.pop(context, "successful");
-                },
-                child: Text("Update"))
+            Row(
+              children: [
+                FlatButton(
+                  onPressed: () async {
+                    await _presenter.update();
+                    Navigator.pop(context, "successful");
+                  },
+                  padding: EdgeInsets.all(25),
+                  child: Text(
+                    "Save Changes",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+                FlatButton(
+                  onPressed: () async {
+                    Navigator.pop(context, "Cancelled");
+                  },
+                  padding: EdgeInsets.all(25),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                )
+              ],
+            ),
           ],
         ),
       ),

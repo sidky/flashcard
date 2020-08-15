@@ -33,12 +33,8 @@ class _AuthViewState extends State {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: _loginScreen ? _LoginView() : _SignupView(),
-        ),
-      ),
+    return Center(
+      child: _loginScreen ? _LoginView() : _SignupView(),
     );
   }
 

@@ -51,12 +51,35 @@ class _EditNounState extends State {
             Text("Plural"),
             _EditNounForms(GrammaticalNumber.plural, _presenter),
             SizedBox(width: 1, height: 20),
-            FlatButton(
-                onPressed: () async {
-                  await _presenter.update();
-                  Navigator.pop(context, "Saved");
-                },
-                child: Text("Save changes"))
+            Row(
+              children: [
+                FlatButton(
+                  onPressed: () async {
+                    await _presenter.update();
+                    Navigator.pop(context, "Saved");
+                  },
+                  padding: EdgeInsets.all(25),
+                  child: Text(
+                    "Save changes",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+                FlatButton(
+                  onPressed: () async {
+                    Navigator.pop(context, "Cancelled");
+                  },
+                  padding: EdgeInsets.all(25),
+                  child: Text(
+                    "Cancel",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),

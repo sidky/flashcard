@@ -23,41 +23,49 @@ class CardListWidgetState extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<CardList>(
-        stream: _presenter.cardListStream,
-        builder: (BuildContext context, AsyncSnapshot<CardList> snapshot) {
-          double width = MediaQuery.of(context).size.width;
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _CardListFilterWidget(_presenter),
+            StreamBuilder<CardList>(
+              stream: _presenter.cardListStream,
+              builder:
+                  (BuildContext context, AsyncSnapshot<CardList> snapshot) {
+                double width = MediaQuery.of(context).size.width;
 
-          var data = snapshot.data;
+                var data = snapshot.data;
 
-          if (data == null) {
-            return Text("No words");
-          }
-          int columns = (width / 200).floor();
-          if (columns == 0) {
-            columns = 1;
-          }
+                if (data == null) {
+                  return Text("No words");
+                }
+                int columns = (width / 200).floor();
+                if (columns == 0) {
+                  columns = 1;
+                }
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildWordTile(
-                    "Noun",
-                    data.nouns,
-                    (Noun noun) async => await _editWord(
-                        context, (context) => EditNounWidget(noun: noun))),
-                _buildWordTile(
-                    "Verb",
-                    data.verbs,
-                    (Verb verb) async => await _editWord(
-                        context,
-                        (context) => EditVerbWidget(
-                              verb: verb,
-                            )))
-              ],
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildWordTile(
+                          "Noun",
+                          data.nouns,
+                          (Noun noun) async => await _editWord(context,
+                              (context) => EditNounWidget(noun: noun))),
+                      _buildWordTile(
+                          "Verb",
+                          data.verbs,
+                          (Verb verb) async => await _editWord(
+                              context,
+                              (context) => EditVerbWidget(
+                                    verb: verb,
+                                  )))
+                    ],
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ],
+        ),
       ),
     );
   }
@@ -90,5 +98,28 @@ class CardListWidgetState extends State {
       BuildContext context, Widget builder(BuildContext context)) async {
     await Navigator.push(context, MaterialPageRoute(builder: builder));
     setState(() {});
+  }
+}
+
+class _CardListFilterWidget extends StatelessWidget {
+  final CardListPresenter _presenter;
+  final TextEditingController _controller;
+
+  _CardListFilterWidget(this._presenter)
+      : _controller = TextEditingController() {
+    _controller.value = TextEditingValue(text: _presenter.currentFilterQuery);
+    _controller.addListener(() {
+      _presenter.filterCards(_controller.text);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: _controller,
+      decoration: InputDecoration(
+        labelText: "Search",
+      ),
+    );
   }
 }

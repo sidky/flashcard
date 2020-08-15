@@ -39,6 +39,16 @@ class AuthRepository {
     });
   }
 
+  Future<AuthState> get currentAuthState =>
+      _auth.currentUser().then((firebaseUser) async {
+        if (firebaseUser != null) {
+          var user = await _converter.convert(firebaseUser);
+          return AuthState(user, DateTime.now());
+        } else {
+          return AuthState.unauthenticated();
+        }
+      });
+
   bool get isLoggedIn => _isLoggedIn;
   User get loggedInUser => _loggedInUser;
 

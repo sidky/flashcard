@@ -1,5 +1,8 @@
 import 'package:flashcard/auth/auth_view.dart';
 import 'package:flashcard/edit/card_list.dart';
+import 'package:flashcard/flashcard/flashcard_view.dart';
+import 'package:flashcard/model/auth_state.dart';
+import 'package:flashcard/repository/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flashcard/repository/getit.dart' as getItRepository;
@@ -7,11 +10,13 @@ import 'package:flashcard/converter/getit.dart' as getItConverter;
 import 'package:flashcard/auth/getit.dart' as getItAuth;
 import 'package:flashcard/storage/getit.dart' as getItStorage;
 import 'package:flashcard/edit/getit.dart' as getItEdit;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:get_it/get_it.dart';
 
 void main() {
   setupGetIt();
 
-  runApp(MyApp());
+  runApp(FlashcardApp());
 }
 
 void setupGetIt() {
@@ -23,6 +28,50 @@ void setupGetIt() {
 
   getItAuth.setup();
   getItEdit.setup();
+}
+
+class FlashcardApp extends StatelessWidget {
+  final AuthRepository _authRepository;
+
+  FlashcardApp({AuthRepository repository})
+      : _authRepository = repository ?? GetIt.I.get();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: "Flashcard",
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: Scaffold(
+        body: SafeArea(
+          child: StreamBuilder(
+            stream: _authRepository.authState,
+            builder: (context, authState) {
+              bool authenticated;
+
+              if (authState.hasError || !authState.hasData) {
+                print(
+                    "Error fetching authentication state: ${authState.error}");
+                authenticated = false;
+              } else {
+                authenticated = (authState.data as AuthState).isAuthenticated();
+              }
+
+              if (!authenticated) {
+                return AuthView();
+              } else if (kIsWeb) {
+                return CardListWidget();
+              } else {
+                return FlashCardView();
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
